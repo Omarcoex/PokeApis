@@ -1,7 +1,12 @@
-//https://pokeapi.co/api/v2/pokemon/ditto
 
-next = document.getElementById("btn");
-next.addEventListener("click", nextPokemon);
+const boton = document.querySelector("#btn");
+const detalleCard = document.querySelector(".detalle-card");
+
+boton.addEventListener("click", (e) => {
+  e.preventDefault()
+  cargarData();
+  console.log("escuchando");
+});
 
 const URL = "https://pokeapi.co/api/v2/pokemon/ditto";
 
@@ -22,25 +27,40 @@ const URL = "https://pokeapi.co/api/v2/pokemon/ditto";
 // Asin await
 
 let id = 1;
-async function nextPokemon() {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+async function cargarData() {
+  const input = document.querySelector(".buscar").value;
+  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${input}`);
   const data = await res.json();
   console.log(data);
+  dibujarPokemon(data)
   id++;
-
-  const pokemon = {
-    nombre: data.name,
-    experiencia: data.base_experience,
-    hp: data.stats[1].base_stat,
-    ataque: data.stats[1].base_stat,
-    defensa: data.stats[2].base_stat,
-    especial: data.stats[3].base_stat,
-  };
 }
 
-const pintarCard = (pokemon) => {
-  const flex = document.querySelector(".flex");
-  const template = document.getElementById("card").content;
-  const clone = template.cloneNode(true);
-  const fragment = document.createDocumentFragment();
-};
+// Creamos los pokemones en html
+function dibujarPokemon(pokemon) {
+  const img = document.createElement("img");
+  img.src = pokemon.sprites.front_default;
+  
+  const h2 = document.createElement("h2");
+  h2.textContent = pokemon.name.toUpperCase();
+
+// data.forEach((pokemon,index)=>{
+//   const listItem = document.createElement('li');
+//   const hp= document.createTextNode(`${pokemon.stats[0].name}`)
+//   listItem.appendChild(hp)
+// })
+
+// const habilidad =document.createElement('li')
+// li.textContent=pokemon.abilities[0].ability.name
+   
+
+
+
+  // Agregamos datos al dom desde javascritp
+  const div = document.createElement("div");
+  div.appendChild(img);
+  div.appendChild(h2);
+  // div.appendChild(li)
+
+  detalleCard.appendChild(div);
+}
