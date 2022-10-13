@@ -1,46 +1,96 @@
-//https://pokeapi.co/api/v2/pokemon/ditto
+const contenedor = document.querySelector("#container");
+const boton = document.querySelector("#btn");
+const detalleCard = document.querySelector(".detalle-card");
 
-next = document.getElementById("btn");
-next.addEventListener("click", nextPokemon);
+// const URL = "https://pokeapi.co/api/v2/pokemon/ditto";
 
-const URL = "https://pokeapi.co/api/v2/pokemon/ditto";
+// let id = 1;
+// async function nextPokemon() {
+//   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+//   const data = await res.json();
+//   console.log(data);
+//   id++;
+// }
 
-// fetch(URL)
-//   .then(response => {
-//     if (response.status == 404) {
-//       document.body.textContent = "no encontrado";
-//     } else {
-//       return response.json();
-//     }
-//   })
+const getPokemon = async () => {
+  try {
+    const input = document.querySelector(".buscar").value;
+    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${input}`);
+    const data = await res.json();
+    console.log(data);
+    console.log("escuchando");
+    crearPokemon(data);
+    if (!res.ok) {
+      alert("No esta en la BD de pokemon");
+    }
+    const encontrado = await res.json();
+    return encontrado;
+  } catch (error) {
+    console.log("Error: " + error.message);
+  } finally {
+    console.log("done!!!");
+  }
+};
+// getPokemon();
+function listaPokemos(number) {
+  for (let i = 0; i < number; i++) {
+    listaPokemos(i);
+  }
+}
+function crearPokemon(pokemon) {
+  const card = document.createElement("div");
+  card.classList.add("card-block");
 
-//   .then(data => {
-//     document.body.innerHTML = `<img src='${data.sprites.front_default}'>`;
-//     console.log(data);
-//   });
+  const spriteContainer = document.createElement("div");
+  spriteContainer.classList.add("img-container");
 
-// Asin await
+  const sprite = document.createElement("img");
+  sprite.src = pokemon.sprites.front_default;
 
-let id = 1;
-async function nextPokemon() {
-  const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-  const data = await res.json();
-  console.log(data);
-  id++;
+  spriteContainer.appendChild(sprite);
 
-  const pokemon = {
-    nombre: data.name,
-    experiencia: data.base_experience,
-    hp: data.stats[1].base_stat,
-    ataque: data.stats[1].base_stat,
-    defensa: data.stats[2].base_stat,
-    especial: data.stats[3].base_stat,
-  };
+  const number = document.createElement("p");
+  number.textContent = `${pokemon.id.toString().padStart(3, 0)}`;
+
+  const nombre = document.createElement("h2");
+  nombre.classList.add("nombre");
+  nombre.textContent = pokemon.name.toUpperCase();
+
+  const habilidad = document.createElement("h2");
+  habilidad.classList.add("habilidad");
+  habilidad.innerHTML = `${pokemon.abilities[0].ability.name}`;
+
+  const hp = document.createElement("h2");
+  hp.classList.add("hp");
+  hp.innerHTML = `${pokemon.stats[0].stat.name}`;
+
+  const tipo = document.createElement("p");
+  tipo.classList.add("tipo");
+  tipo.textContent = `${pokemon.stats[0].base_stat}`;
+  // Recorres con ciclo para las propiedades
+  // let tabla = `<table class = "table"> <tr><td> ${name}</td></tr>`;
+  // for (let i = 0; i < stats.length; i++) {
+  //   tabla += "<tr>";
+  //   tabla += `${stats[i].types[0].type.name}`;
+  //   tabla += `${stats[i].types[0].base_stat}`;
+  //   tabla += "</tr>";
+  // }
+  // tabla += "</table>";
+  // detalleCard.append(tabla);
+
+  // agregamos al DOM elements
+  card.appendChild(spriteContainer);
+  card.appendChild(number);
+  card.appendChild(nombre);
+  card.appendChild(habilidad);
+  card.appendChild(hp);
+  card.appendChild(tipo);
+
+  detalleCard.appendChild(card);
 }
 
-const pintarCard = (pokemon) => {
-  const flex = document.querySelector(".flex");
-  const template = document.getElementById("card").content;
-  const clone = template.cloneNode(true);
-  const fragment = document.createDocumentFragment();
-};
+next = document.getElementById("btn");
+next.addEventListener("click", getPokemon);
+console.log("Recibo su click");
+// listar pokemones en el card
+listaPokemos(9);
