@@ -13,7 +13,10 @@ buscar.addEventListener("touchstart", insertPokemon); //El touchstartevento se a
 
 eliminar.addEventListener("click", deletePokemons);
 eliminar.addEventListener("touchstart", deletePokemons);
-
+if (!pokemonName==""){
+  alert("Bienvendos a la buscqueda de pokemon");
+  
+}
 async function insertPokemon() {
   try {
     const res = await fetch(`${API_Url}${pokemon.value.toLocaleLowerCase()}`);
@@ -90,6 +93,7 @@ async function insertPokemon() {
     console.log("Error en la consulta" + error.message);
   } finally {
     console.log("Done!!!");
+    alert("Consulta exitosamente");
   }
 }
 // Crear function para elimnar
