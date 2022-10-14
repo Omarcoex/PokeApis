@@ -1,96 +1,103 @@
-const contenedor = document.querySelector("#container");
-const boton = document.querySelector("#btn");
-const detalleCard = document.querySelector(".detalle-card");
+// constante para link de la api de la base de datos
+const API_Url = `https://pokeapi.co/api/v2/pokemon/`;
 
-// const URL = "https://pokeapi.co/api/v2/pokemon/ditto";
+// Llamamos desde el dom
+const pokemon = document.getElementById("pokemonName");
+const appNode = document.getElementById("app");
+const buscar = document.getElementById("btn");
+const eliminar = document.getElementById("clear");
 
-// let id = 1;
-// async function nextPokemon() {
-//   const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
-//   const data = await res.json();
-//   console.log(data);
-//   id++;
-// }
+// Ponemos a escuchar el evento
+buscar.addEventListener("click", insertPokemon);
+buscar.addEventListener("touchstart", insertPokemon); //El touchstartevento se activa cuando se colocan uno o más puntos de contacto en la superficie táctil.
 
-const getPokemon = async () => {
+eliminar.addEventListener("click", deletePokemons);
+eliminar.addEventListener("touchstart", deletePokemons);
+
+async function insertPokemon() {
   try {
-    const input = document.querySelector(".buscar").value;
-    const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${input}`);
+    const res = await fetch(`${API_Url}${pokemon.value.toLocaleLowerCase()}`);
     const data = await res.json();
-    console.log(data);
-    console.log("escuchando");
-    crearPokemon(data);
-    if (!res.ok) {
-      alert("No esta en la BD de pokemon");
+
+    const allItems = [];
+    const result = []; //*Guardaremos la respuesta en el array
+
+    for (let pokemonInfo in data) {
+      //*Convertimos el objeto JSON a array
+      result.push([pokemonInfo, data[pokemonInfo]]);
     }
-    const encontrado = await res.json();
-    return encontrado;
+
+    console.table(result); //! mostrar tabla con la lista Pokemos
+
+    //* Información de en frente
+
+    //*Crear imagen
+    const pokemonImage = document.createElement("img");
+    pokemonImage.src = result[14][1].front_default; //*Image of pokemon
+
+    //*Nombre de pokemon e ID
+    const pokemonName = document.createElement("h2");
+    pokemonName.innerText = `Name: ${result[10][1]} - ID: ${result[6][1]}`; //* Name of pokemon with ID
+
+    //*Tipo de pokemon
+    const pokemonType = document.createElement("h2");
+    pokemonType.innerText = `Type: ${result[16][1][0].type.name}`; //*Type of pokemon
+
+    //* Pokemon HP
+    const hp = document.createElement("p");
+    hp.innerText = `HP: ${result[15][1][0].base_stat}`; //*HP of pokemon
+    hp.classList.add("pokemonStats");
+
+    //* Attack power
+    const attack = document.createElement("p");
+    attack.innerText = `Attack: ${result[15][1][1].base_stat}`; //* Attack power of pokemon
+    attack.classList.add("pokemonStats");
+
+    //* Defense
+    const defense = document.createElement("p");
+    defense.innerText = `Defense: ${result[15][1][2].base_stat}`; //* Pokemon defense
+    defense.classList.add("pokemonStats");
+
+    //* Attack
+    const specialAttack = document.createElement("p");
+    specialAttack.innerText = `Special Attack: ${result[15][1][3].base_stat}`; //* Pokemon special attack
+    specialAttack.classList.add("pokemonStats");
+
+    //*  Defense
+    const specialDefense = document.createElement("p");
+    specialDefense.innerText = `Special Defense: ${result[15][1][4].base_stat}`; //* Pokemon special defense
+    specialDefense.classList.add("pokemonStats");
+
+    //* Speed
+    const speed = document.createElement("p");
+    speed.innerText = `Speed: ${result[15][1][5].base_stat}`; //* Pokemon special attack
+    speed.classList.add("pokemonStats");
+
+    //* Contenerdor de stats
+    const stats = document.createElement("div");
+    stats.append(hp, attack, defense, specialAttack, specialDefense, speed);
+    stats.classList.add("pokemonStatsContainer");
+
+    //*Crear contenedor
+    const container = document.createElement("div");
+    container.append(pokemonImage, pokemonName, pokemonType, stats);
+    container.classList.add("container");
+
+    allItems.push(container);
+
+    appNode.append(...allItems); //Spread operation
   } catch (error) {
-    console.log("Error: " + error.message);
+    console.log("Error en la consulta" + error.message);
   } finally {
-    console.log("done!!!");
-  }
-};
-// getPokemon();
-function listaPokemos(number) {
-  for (let i = 0; i < number; i++) {
-    listaPokemos(i);
+    console.log("Done!!!");
   }
 }
-function crearPokemon(pokemon) {
-  const card = document.createElement("div");
-  card.classList.add("card-block");
+// Crear function para elimnar
+function deletePokemons() {
+  let allPokemon = appNode.childNodes;
+  allPokemon = Array.from(allPokemon);
 
-  const spriteContainer = document.createElement("div");
-  spriteContainer.classList.add("img-container");
-
-  const sprite = document.createElement("img");
-  sprite.src = pokemon.sprites.front_default;
-
-  spriteContainer.appendChild(sprite);
-
-  const number = document.createElement("p");
-  number.textContent = `${pokemon.id.toString().padStart(3, 0)}`;
-
-  const nombre = document.createElement("h2");
-  nombre.classList.add("nombre");
-  nombre.textContent = pokemon.name.toUpperCase();
-
-  const habilidad = document.createElement("h2");
-  habilidad.classList.add("habilidad");
-  habilidad.innerHTML = `${pokemon.abilities[0].ability.name}`;
-
-  const hp = document.createElement("h2");
-  hp.classList.add("hp");
-  hp.innerHTML = `${pokemon.stats[0].stat.name}`;
-
-  const tipo = document.createElement("p");
-  tipo.classList.add("tipo");
-  tipo.textContent = `${pokemon.stats[0].base_stat}`;
-  // Recorres con ciclo para las propiedades
-  // let tabla = `<table class = "table"> <tr><td> ${name}</td></tr>`;
-  // for (let i = 0; i < stats.length; i++) {
-  //   tabla += "<tr>";
-  //   tabla += `${stats[i].types[0].type.name}`;
-  //   tabla += `${stats[i].types[0].base_stat}`;
-  //   tabla += "</tr>";
-  // }
-  // tabla += "</table>";
-  // detalleCard.append(tabla);
-
-  // agregamos al DOM elements
-  card.appendChild(spriteContainer);
-  card.appendChild(number);
-  card.appendChild(nombre);
-  card.appendChild(habilidad);
-  card.appendChild(hp);
-  card.appendChild(tipo);
-
-  detalleCard.appendChild(card);
+  allPokemon.forEach((pokemon) => {
+    pokemon.remove(pokemon);
+  });
 }
-
-next = document.getElementById("btn");
-next.addEventListener("click", getPokemon);
-console.log("Recibo su click");
-// listar pokemones en el card
-listaPokemos(9);
